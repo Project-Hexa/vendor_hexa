@@ -97,3 +97,6 @@ include vendor/hexa/config/props.mk
 
 # Sounds
 include vendor/hexa/config/sounds.mk
+
+# Themes
+include vendor/hexa/config/themes.mk
