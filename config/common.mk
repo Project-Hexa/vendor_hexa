@@ -101,6 +101,9 @@ $(call inherit-product, vendor/hexa/config/packages.mk)
 # Version
 $(call inherit-product, vendor/hexa/config/version.mk)
 
+# Audio
+$(call inherit-product, vendor/hexa/config/audio.mk)
+
 #Telephony
 $(call inherit-product, vendor/hexa/config/telephony.mk)
 
