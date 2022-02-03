@@ -104,6 +104,9 @@ $(call inherit-product, vendor/hexa/config/version.mk)
 # Audio
 $(call inherit-product, vendor/hexa/config/audio.mk)
 
+# Bootanimation
+$(call inherit-product, vendor/hexa/config/bootanimation.mk)
+
 #Telephony
 $(call inherit-product, vendor/hexa/config/telephony.mk)
 
