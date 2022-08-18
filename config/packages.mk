@@ -15,19 +15,13 @@
 
 # Required packages
 PRODUCT_PACKAGES += \
-    BluetoothExt \
-    SimpleCalendar \
-    DuckDuckGo \
-    ExactCalculator \
+    DeskClock \
     LatinIME \
     Launcher3QuickStep \
     messaging \
-    SimpleGallery \
     Stk \
-    stats \
-    ThemePicker \
-    ArrowThemesStub \
-    GameSpace
+    WallpaperPicker2 \
+    ThemePicker
 
 # SystemUI plugins
 PRODUCT_PACKAGES += \

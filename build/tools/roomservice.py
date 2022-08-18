@@ -43,13 +43,12 @@ DEBUG = False
 default_manifest = ".repo/manifest.xml"
 
 custom_local_manifest = ".repo/local_manifests/roomservice.xml"
-custom_default_revision = "arrow-12.1"
-custom_dependencies = "arrow.dependencies"
-org_manifest = "ArrowOS-Devices"  # leave empty if org is provided in manifest
-org_display = "ArrowOS-Devices"  # needed for displaying
+custom_default_revision = "13"
+custom_dependencies = "hexa.dependencies"
+org_manifest = "Hexa-Project-Devices"  # leave empty if org is provided in manifest
+org_display = "Hexa-Project-Devices"  # needed for displaying
 
-arrow_manifest = ".repo/manifests/arrow.xml"
-hals_manifest = ".repo/manifests/hals.xml"
+hexa_manifest = ".repo/manifests/snippets/hexa.xml"
 
 github_auth = None
 
@@ -172,8 +171,7 @@ def is_in_manifest(project_path):
 def add_to_manifest(repos, fallback_branch=None):
     lm = load_manifest(custom_local_manifest)
     mlm = load_manifest(default_manifest)
-    arrowm = load_manifest(arrow_manifest)
-    halm = load_manifest(hals_manifest)
+    hexam = load_manifest(hexa_manifest)
 
     for repo in repos:
         repo_name = repo['repository']
@@ -201,10 +199,8 @@ def add_to_manifest(repos, fallback_branch=None):
         existing_m_project = None
         if exists_in_tree(mlm, repo_target) != None:
             existing_m_project = exists_in_tree(mlm, repo_target)
-        elif exists_in_tree(arrowm, repo_target) != None:
-            existing_m_project = exists_in_tree(arrowm, repo_target)
-        elif exists_in_tree(halm, repo_target) != None:
-            existing_m_project = exists_in_tree(halm, repo_target)
+        elif exists_in_tree(hexam, repo_target) != None:
+            existing_m_project = exists_in_tree(hexam, repo_target)
 
         if existing_m_project != None:
             if existing_m_project.attrib['path'] == repo['target_path']:
