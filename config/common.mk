@@ -87,17 +87,8 @@ PRODUCT_MINIMIZE_JAVA_DEBUG_INFO := true
 # Disable vendor restrictions
 PRODUCT_RESTRICT_VENDOR_FILES := false
 
-# Bootanimation
-#  vendor/hexa/config/bootanimation.mk
-
-# Fonts
-include vendor/hexa/config/fonts.mk
-
 # Packages
 include vendor/hexa/config/packages.mk
 
 # Props
 include vendor/hexa/config/props.mk
-
-# Sounds
-include vendor/hexa/config/sounds.mk

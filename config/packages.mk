@@ -38,14 +38,6 @@ endif
 PRODUCT_PACKAGES += \
     SimpleDeviceConfig
 
-# Navbar
-PRODUCT_PACKAGES += \
-    NavigationBarNoHintOverlay
-
-# Themes
-PRODUCT_PACKAGES += \
-    AndroidBlackThemeOverlay
-
 # Extra tools
 PRODUCT_PACKAGES += \
     7z \
