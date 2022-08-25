@@ -1,66 +1,49 @@
-# Allow vendor/extra to override any property by setting it first
-$(call inherit-product-if-exists, vendor/extra/product.mk)
+# Copyright (C) 2022 Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-PRODUCT_BRAND ?= LineageOS
-
-PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
-
-ifeq ($(PRODUCT_GMS_CLIENTID_BASE),)
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
-    ro.com.google.clientidbase=android-google
-else
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
-    ro.com.google.clientidbase=$(PRODUCT_GMS_CLIENTID_BASE)
-endif
-
-ifeq ($(TARGET_BUILD_VARIANT),eng)
-# Disable ADB authentication
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.adb.secure=0
-else
-# Enable ADB authentication
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.adb.secure=1
-
-# Disable extra StrictMode features on all non-engineering builds
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += persist.sys.strictmode.disable=true
-endif
+PRODUCT_BRAND ?= Hexa
 
 # Backup Tool
 PRODUCT_COPY_FILES += \
-    vendor/lineage/prebuilt/common/bin/backuptool.sh:install/bin/backuptool.sh \
-    vendor/lineage/prebuilt/common/bin/backuptool.functions:install/bin/backuptool.functions \
-    vendor/lineage/prebuilt/common/bin/50-lineage.sh:$(TARGET_COPY_OUT_SYSTEM)/addon.d/50-lineage.sh
+    vendor/hexa/prebuilt/common/bin/backuptool.sh:install/bin/backuptool.sh \
+    vendor/hexa/prebuilt/common/bin/backuptool.functions:install/bin/backuptool.functions \
+    vendor/hexa/prebuilt/common/bin/50-hexa.sh:$(TARGET_COPY_OUT_SYSTEM)/addon.d/50-hexa.sh
 
 PRODUCT_ARTIFACT_PATH_REQUIREMENT_ALLOWED_LIST += \
-    system/addon.d/50-lineage.sh
+    system/addon.d/50-hexa.sh
 
 ifneq ($(strip $(AB_OTA_PARTITIONS) $(AB_OTA_POSTINSTALL_CONFIG)),)
 PRODUCT_COPY_FILES += \
-    vendor/lineage/prebuilt/common/bin/backuptool_ab.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.sh \
-    vendor/lineage/prebuilt/common/bin/backuptool_ab.functions:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.functions \
-    vendor/lineage/prebuilt/common/bin/backuptool_postinstall.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_postinstall.sh
+    vendor/hexa/prebuilt/common/bin/backuptool_ab.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.sh \
+    vendor/hexa/prebuilt/common/bin/backuptool_ab.functions:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_ab.functions \
+    vendor/hexa/prebuilt/common/bin/backuptool_postinstall.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/backuptool_postinstall.sh
+endif
 
 PRODUCT_ARTIFACT_PATH_REQUIREMENT_ALLOWED_LIST += \
     system/bin/backuptool_ab.sh \
     system/bin/backuptool_ab.functions \
     system/bin/backuptool_postinstall.sh
 
-ifneq ($(TARGET_BUILD_VARIANT),user)
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
-    ro.ota.allow_downgrade=true
-endif
-endif
-
-# Lineage-specific broadcast actions whitelist
+# init file
 PRODUCT_COPY_FILES += \
-    vendor/lineage/config/permissions/lineage-sysconfig.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/sysconfig/lineage-sysconfig.xml
-
-# Lineage-specific init rc file
-PRODUCT_COPY_FILES += \
-    vendor/lineage/prebuilt/common/etc/init/init.lineage-system_ext.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.lineage-system_ext.rc
+    vendor/hexa/prebuilt/common/etc/init/hexa-system.rc:$(TARGET_COPY_OUT_PRODUCT)/etc/init/hexa-system.rc \
+    vendor/hexa/prebuilt/common/etc/init/hexa-updates.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/hexa-updates.rc \
+    vendor/hexa/prebuilt/common/etc/init/init.openssh.rc:$(TARGET_COPY_OUT_PRODUCT)/etc/init/init.openssh.rc
 
 # Enable Android Beam on all targets
 PRODUCT_COPY_FILES += \
-    vendor/lineage/config/permissions/android.software.nfc.beam.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/android.software.nfc.beam.xml
+    vendor/hexa/config/permissions/android.software.nfc.beam.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/android.software.nfc.beam.xml
 
 # Enable SIP+VoIP on all targets
 PRODUCT_COPY_FILES += \
@@ -70,24 +53,26 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     frameworks/base/data/keyboards/Vendor_045e_Product_028e.kl:$(TARGET_COPY_OUT_PRODUCT)/usr/keylayout/Vendor_045e_Product_0719.kl
 
-# This is Lineage!
-PRODUCT_COPY_FILES += \
-    vendor/lineage/config/permissions/org.lineageos.android.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/org.lineageos.android.xml
+# Dex preopt
+PRODUCT_DEXPREOPT_SPEED_APPS += \
+    SystemUI \
+    Launcher3QuickStep
 
-# Enforce privapp-permissions whitelist
-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
-    ro.control_privapp_permissions=enforce
-
-# Include AOSP audio files
-include vendor/lineage/config/aosp_audio.mk
-
-# Include Lineage audio files
-include vendor/lineage/config/lineage_audio.mk
-
-ifneq ($(TARGET_DISABLE_LINEAGE_SDK), true)
-# Lineage SDK
-include vendor/lineage/config/lineage_sdk_common.mk
+# SetupWizard and Google Assistant properties
+PRODUCT_PRODUCT_PROPERTIES += \
+    ro.setupwizard.rotation_locked=true \
+    setupwizard.theme=glif_v3_light \
+    ro.opa.eligible_device=true
 endif
+
+# Superior Permissions
+PRODUCT_COPY_FILES += \
+    vendor/hexa/config/permissions/privapp-permissions-hexa-product.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/privapp-permissions-hexa.xml \
+    vendor/hexa/config/permissions/privapp-permissions-hexa-system_ext.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-hexa-system_ext.xml \
+    vendor/hexa/config/permissions/privapp-permissions-hexa.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/privapp-permissions-hexa.xml
+
+# Include LatinIME dictionaries
+PRODUCT_PACKAGE_OVERLAYS += vendor/hexa/overlay/dictionaries
 
 # Do not include art debug targets
 PRODUCT_ART_TARGET_INCLUDE_DEBUG_BUILD := false
@@ -97,118 +82,27 @@ PRODUCT_ART_TARGET_INCLUDE_DEBUG_BUILD := false
 # leave less information available via JDWP.
 PRODUCT_MINIMIZE_JAVA_DEBUG_INFO := true
 
-# Disable vendor restrictions
-PRODUCT_RESTRICT_VENDOR_FILES := false
-
-# Bootanimation
-TARGET_SCREEN_WIDTH ?= 1080
-TARGET_SCREEN_HEIGHT ?= 1920
-PRODUCT_PACKAGES += \
-    bootanimation.zip
-
-# Lineage packages
-PRODUCT_PACKAGES += \
-    LineageParts \
-    LineageSettingsProvider \
-    LineageSetupWizard \
-    Updater
-
-PRODUCT_COPY_FILES += \
-    vendor/lineage/prebuilt/common/etc/init/init.lineage-updater.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/init.lineage-updater.rc
-
-# Themes
-PRODUCT_PACKAGES += \
-    LineageBlackTheme \
-    LineageThemesStub \
-    ThemePicker
-
-# Config
-PRODUCT_PACKAGES += \
-    SimpleDeviceConfig
-
-# Extra tools in Lineage
-PRODUCT_PACKAGES += \
-    7z \
-    bash \
-    curl \
-    getcap \
-    htop \
-    lib7z \
-    nano \
-    pigz \
-    setcap \
-    unrar \
-    vim \
-    zip
-
-PRODUCT_ARTIFACT_PATH_REQUIREMENT_ALLOWED_LIST += \
-    system/bin/curl \
-    system/bin/getcap \
-    system/bin/setcap
-
-# Openssh
-PRODUCT_PACKAGES += \
-    scp \
-    sftp \
-    ssh \
-    sshd \
-    sshd_config \
-    ssh-keygen \
-    start-ssh
-
-PRODUCT_COPY_FILES += \
-    vendor/lineage/prebuilt/common/etc/init/init.openssh.rc:$(TARGET_COPY_OUT_PRODUCT)/etc/init/init.openssh.rc
-
-# rsync
-PRODUCT_PACKAGES += \
-    rsync
-
 # Storage manager
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
     ro.storage_manager.enabled=true
 
-# These packages are excluded from user builds
-PRODUCT_PACKAGES_DEBUG += \
-    procmem
+# Media
+PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+    media.recorder.show_manufacturer_and_model=true
 
-ifneq ($(TARGET_BUILD_VARIANT),user)
-PRODUCT_ARTIFACT_PATH_REQUIREMENT_ALLOWED_LIST += \
-    system/bin/procmem
-endif
+PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += vendor/hexa/overlay
 
-# Root
-PRODUCT_PACKAGES += \
-    adb_root
-ifneq ($(TARGET_BUILD_VARIANT),user)
-ifeq ($(WITH_SU),true)
-PRODUCT_PACKAGES += \
-    su
-endif
-endif
+# Device Overlays
+DEVICE_PACKAGE_OVERLAYS += vendor/hexa/overlay/common
 
-# Dex preopt
-PRODUCT_DEXPREOPT_SPEED_APPS += \
-    SystemUI
+# Packages
+$(call inherit-product, vendor/hexa/config/packages.mk)
 
-PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += vendor/lineage/overlay/no-rro
-PRODUCT_PACKAGE_OVERLAYS += \
-    vendor/lineage/overlay/common \
-    vendor/lineage/overlay/no-rro
+# Version
+$(call inherit-product, vendor/hexa/config/version.mk)
 
-PRODUCT_PACKAGES += \
-    NetworkStackOverlay \
-    TrebuchetOverlay
+#Telephony
+$(call inherit-product, vendor/hexa/config/telephony.mk)
 
-# Translations
-PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += vendor/crowdin/overlay
-PRODUCT_PACKAGE_OVERLAYS += vendor/crowdin/overlay
-
-PRODUCT_EXTRA_RECOVERY_KEYS += \
-    vendor/lineage/build/target/product/security/lineage
-
-include vendor/lineage/config/version.mk
-
--include vendor/lineage-priv/keys/keys.mk
-
--include $(WORKSPACE)/build_env/image-auto-bits.mk
--include vendor/lineage/config/partner_gms.mk
+# Props
+$(call inherit-product, vendor/hexa/config/props.mk)

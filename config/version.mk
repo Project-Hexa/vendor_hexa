@@ -1,38 +1,20 @@
-PRODUCT_VERSION_MAJOR = 19
-PRODUCT_VERSION_MINOR = 1
+HEXA_BASE_VERSION := Alpha
+BUILD_TYPE ?= UNOFFICIAL
+HEXA_OTA_BRANCH := 13
 
-ifeq ($(LINEAGE_VERSION_APPEND_TIME_OF_DAY),true)
-    LINEAGE_BUILD_DATE := $(shell date -u +%Y%m%d_%H%M%S)
-else
-    LINEAGE_BUILD_DATE := $(shell date -u +%Y%m%d)
-endif
+# Set all versions
+BUILD_DATE := $(shell date -u +%d%m%Y)
+BUILD_TIME := $(shell date -u +%H%M)
+ROM_FINGERPRINT := Hexa/$(HEXA_BASE_VERSION)/$(PLATFORM_VERSION)/$(BUILD_TYPE)/$(BUILD_ID)/$(BUILD_DATE)/$(BUILD_TIME)
+HEXA_VERSION := Hexa-$(HEXA_BASE_VERSION)-$(HEXA_OTA_BRANCH)-$(BUILD_DATE)-$(BUILD_TYPE)-$(BUILD_TIME)
+HEXA_DISPLAY_VERSION := Hexa-$(HEXA_BASE_VERSION)-$(HEXA_OTA_BRANCH)
 
-# Set LINEAGE_BUILDTYPE from the env RELEASE_TYPE, for jenkins compat
-
-ifndef LINEAGE_BUILDTYPE
-    ifdef RELEASE_TYPE
-        # Starting with "LINEAGE_" is optional
-        RELEASE_TYPE := $(shell echo $(RELEASE_TYPE) | sed -e 's|^LINEAGE_||g')
-        LINEAGE_BUILDTYPE := $(RELEASE_TYPE)
-    endif
-endif
-
-# Filter out random types, so it'll reset to UNOFFICIAL
-ifeq ($(filter RELEASE NIGHTLY SNAPSHOT EXPERIMENTAL,$(LINEAGE_BUILDTYPE)),)
-    LINEAGE_BUILDTYPE := UNOFFICIAL
-    LINEAGE_EXTRAVERSION :=
-endif
-
-ifeq ($(LINEAGE_BUILDTYPE), UNOFFICIAL)
-    ifneq ($(TARGET_UNOFFICIAL_BUILD_ID),)
-        LINEAGE_EXTRAVERSION := -$(TARGET_UNOFFICIAL_BUILD_ID)
-    endif
-endif
-
-LINEAGE_VERSION_SUFFIX := $(LINEAGE_BUILD_DATE)-$(LINEAGE_BUILDTYPE)$(LINEAGE_EXTRAVERSION)-$(LINEAGE_BUILD)
-
-# Internal version
-LINEAGE_VERSION := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(LINEAGE_VERSION_SUFFIX)
-
-# Display version
-LINEAGE_DISPLAY_VERSION := $(PRODUCT_VERSION_MAJOR)-$(LINEAGE_VERSION_SUFFIX)
+HEXA_PROPERTIES := \
+    BUILD_DISPLAY_ID=$(BUILD_ID) \
+    ro.hexa.build.date=$(BUILD_DATE) \
+    ro.hexa.version=$(HEXA_VERSION) \
+    ro.hexa.build.type=$(BUILD_TYPE) \
+    ro.hexa.build.version=$(HEXA_BASE_VERSION) \
+    ro.hexa.display.version=$(HEXA_DISPLAY_VERSION) \
+    ro.hexa.fingerprint=$(ROM_FINGERPRINT) \
+    ro.hexa.ota.version_code=$(HEXA_OTA_BRANCH)
